@@ -1,0 +1,9 @@
+gradio>=5.9,<6
+gradio_client>=1.5
+websockets>=13
+pillow>=10
+transformers>=4.44
+accelerate
+bitsandbytes
+sentencepiece
+pytest
