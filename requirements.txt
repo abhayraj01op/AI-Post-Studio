@@ -1,7 +1,0 @@
-gradio>=4.44,<6
-pillow>=10
-transformers>=4.44
-accelerate
-bitsandbytes
-sentencepiece
-pytest
