@@ -1,0 +1,93 @@
+"""Central settings. Every file the app makes lives inside Google Drive (BASE)."""
+import os
+from pathlib import Path
+
+BASE = Path(os.environ.get("APS_BASE", "/content/drive/MyDrive/AI_Post_Studio"))
+DATA = BASE / "data"
+IMAGES_DIR = DATA / "images"
+POSTS_DIR = DATA / "posts"
+BIODATA_DIR = DATA / "biodata"
+FONTS_DIR = BASE / "fonts"
+DB_FILE = DATA / "db.json"
+
+# ComfyUI writes its copies to local disk; app deletes them right after reading
+COMFY_OUT = os.environ.get("APS_COMFY_OUT", "/content/comfy_out")
+COMFY_URL = os.environ.get("APS_COMFY_URL", "http://127.0.0.1:8188")
+CHECKPOINT = os.environ.get("APS_CHECKPOINT", "RealVisXL_V5.0_fp16.safetensors")
+TEXT_MODEL = os.environ.get("APS_TEXT_MODEL", "Qwen/Qwen2.5-1.5B-Instruct")
+# Local disk, NOT Drive: Drive is slow and corrupts big model files ("header too large")
+HF_CACHE = Path(os.environ.get("APS_HF_CACHE", "/content/hf_cache"))
+
+# Same choices as the web app
+CATEGORIES = ["Marriage", "Friendship", "Dating", "Remarriage", "Gharjamai"]
+# Minimum / maximum age per category (photo + biodata + text sab isi ko maante hain)
+AGE_RANGE = {"Marriage": (25, 33), "Friendship": (25, 34), "Dating": (25, 32), "Remarriage": (35, 48),
+             "Gharjamai": (35, 45)}
+def age_range(category: str) -> tuple[int, int]:
+    return AGE_RANGE.get(category, (25, 33))
+# Photo ka look: kapde, jagah, background isi se badalte hain
+CLASSES = ["Normal", "Middle class", "High class", "Bold", "Mix (har baar alag)"]
+LANGS = ["Hinglish (Roman, aasan)", "Hindi (aasan, Devanagari)"]
+SUBJECTS = {
+    "Couple": "Couple",
+    "Female": "Sirf ladki (Female)",
+    "Male": "Sirf ladka (Male)",
+    "BetiMaa": "Ladki + uski mammi",
+    "BetaMaa": "Ladka + buzurg mammi",
+}
+DEFAULT_SUBJECT = "Female"
+# label -> (final w, h, generation w, h) ; SDXL-friendly generation sizes
+SIZES = {
+    "1080x1080 (Square)": (1080, 1080, 1024, 1024),
+    "1080x1350 (Portrait)": (1080, 1350, 896, 1120),
+    "1080x1920 (Story)": (1080, 1920, 768, 1344),
+}
+POST_TYPES = {
+    "Normal": "Normal",
+    "Couple": "Couple (romantic, seedha viewer se)",
+    "MaaAkeli": "MaaAkeli (maa ke saath akeli, ghar jamai chahiye)",
+    "BinaPapa": "BinaPapa (maa bol rahi, papa nahi, dahej nahi)",
+    "Anath": "Anath (orphan)",
+    "Divorcee": "Divorcee (nayi shuruaat, second chance)",
+    "Widow": "Widow / Widower (phir se saath)",
+    "BinaDahej": "Bina dahej shaadi",
+    "Govt": "Sarkari naukri wala rishta chahiye",
+    "Business": "Business / dukaan wala ladka",
+    "NRI": "NRI / bahar rehne wala rishta",
+    "LateMarriage": "Late marriage (umar 35+ par bhi rishta)",
+    "Friendship": "Friendship (dosti, baat-cheet)",
+    "Dating": "Dating (milna-julna, serious)",
+    "Urgent": "Urgent rishta (jaldi shaadi)",
+    "Testimonial": "Success story (shaadi ho gayi)",
+    "Festival": "Tyohaar wish + rishta",
+}
+BIO_TYPES = ["Marriage", "Remarriage", "Gharjamai", "Divorcee", "Widow/Widower", "Bina Dahej", "MaaAkeli",
+             "Anath", "Late Marriage", "Friendship", "Dating", "Govt Job", "Business"]
+BIO_AGE = {"Marriage": (25, 33), "Remarriage": (35, 48), "Gharjamai": (35, 45), "Divorcee": (35, 46),
+           "Widow/Widower": (35, 50), "Bina Dahej": (25, 33), "MaaAkeli": (25, 34), "Anath": (25, 34),
+           "Late Marriage": (35, 44), "Friendship": (25, 34), "Dating": (25, 32), "Govt Job": (25, 34),
+           "Business": (25, 36)}
+STATES = [
+    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Delhi", "Goa", "Gujarat",
+    "Haryana", "Himachal Pradesh", "Jammu & Kashmir", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh",
+    "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim",
+    "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Chandigarh",
+]
+STATE_WEIGHTS = {
+    "Uttar Pradesh": 24, "Maharashtra": 12, "Bihar": 12, "West Bengal": 10, "Madhya Pradesh": 8, "Rajasthan": 8,
+    "Tamil Nadu": 7, "Gujarat": 7, "Karnataka": 6, "Andhra Pradesh": 5, "Odisha": 4, "Telangana": 4, "Kerala": 3,
+    "Jharkhand": 4, "Assam": 3, "Punjab": 3, "Chhattisgarh": 3, "Haryana": 3, "Delhi": 2, "Uttarakhand": 1,
+}
+COMMUNITIES = [
+    "Hindu", "Muslim", "Sikh", "Jain", "Christian", "Brahmin", "Rajput", "Yadav", "Jat", "Kurmi",
+    "Baniya / Agarwal", "Kayastha", "Gupta", "Maratha", "Gujjar", "Kushwaha", "Teli", "Lodhi", "SC / ST", "Buddhist",
+]
+MARITAL = ["Divorced", "Widow/Widower", "Separated"]
+EDUCATION = ["10वीं", "12वीं", "बी.ए.", "बी.कॉम", "आई.टी.आई.", "डिप्लोमा", "ग्रेजुएट"]
+NAME_BLOCK_DAYS = 4
+
+
+def ensure_dirs():
+    for d in (DATA, IMAGES_DIR, POSTS_DIR, BIODATA_DIR, FONTS_DIR, HF_CACHE):
+        d.mkdir(parents=True, exist_ok=True)
+ALL_STATES_LABEL = "All"
